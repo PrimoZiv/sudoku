@@ -1,14 +1,14 @@
 'use strict'
 
-const DEFAULT_LACK = 16;
+var DEFAULT_LACK = 16;
 
 // Get random 1-9
 function getRowNumbers() {
-    let seq = [];
-    let temp = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    var seq = [];
+    var temp = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
     while (temp.length > 1) {
-        let random = Math.ceil(Math.random() * temp.length) - 1;
+        var random = Math.ceil(Math.random() * temp.length) - 1;
         seq.push(temp[random]);
         temp.splice(random, 1);
     }
@@ -18,10 +18,10 @@ function getRowNumbers() {
 
 // Check new line valid
 function checkLine(line, matrix, row) {
-    let tag = true;
-    return row.every((v, i) => {
+    var tag = true;
+    return row.every(function(v, i) {
         // check column
-        for (let p = line - 1; p >= 0; p--) {
+        for (var p = line - 1; p >= 0; p--) {
             if (matrix[p][i] === v) {
                 tag = false;
                 return false;
@@ -29,10 +29,10 @@ function checkLine(line, matrix, row) {
         }
 
         // check block
-        let xOffset = i % 3;
-        let yOffset = line % 3;
-        for (let x = i - xOffset; x < i - xOffset + 3; x++) {
-            for (let y = line - yOffset; y < line; y++) {
+        var xOffset = i % 3;
+        var yOffset = line % 3;
+        for (var x = i - xOffset; x < i - xOffset + 3; x++) {
+            for (var y = line - yOffset; y < line; y++) {
                 if (matrix[y][x] === v) {
                     return false;
                 }
@@ -44,15 +44,13 @@ function checkLine(line, matrix, row) {
 
 // Get last Row from above lines
 function getLastLine(matrix) {
-    let column = 0;
-    let row = [];
+    var column = 0;
+    var row = [];
 
     while (column < 9) {
-        let temp = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-        matrix.forEach((v, i) => {
-            let index = temp.findIndex((t) => {
-                return t === v[column];
-            });
+        var temp = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        matrix.forEach(function(v, i) {
+            var index = temp.indexOf(v[column]);
             temp.splice(index, 1);
         });
         column++;
@@ -62,14 +60,14 @@ function getLastLine(matrix) {
 }
 
 function getFull() {
-    let matrix = [];
+    var matrix = [];
 
     // line 1 to line 8
-    for (let i = 0, len = 8; i < len; i++) {
-        let row = getRowNumbers();
+    for (var i = 0, len = 8; i < len; i++) {
+        var row = getRowNumbers();
         if (i !== 0) {
-            let randomCount = 1;
-            while (!checkLine(i, matrix, [...row])) {
+            var randomCount = 1;
+            while (!checkLine(i, matrix, row)) {
                 row = getRowNumbers();
                 randomCount++;
 
@@ -77,14 +75,14 @@ function getFull() {
                     return getFull();
                 }
             }
-            matrix.push([...row]);
+            matrix.push(row);
         } else {
-            matrix.push([...row]);
+            matrix.push(row);
         }
     }
 
     // fill line 9
-    let lastRow = getLastLine(matrix);
+    var lastRow = getLastLine(matrix);
     if (!checkLine(8, matrix, lastRow)) {
         return getFull();
     } else {
@@ -94,14 +92,14 @@ function getFull() {
 }
 
 function blink(lack) {
-    let matrix = getFull();
+    var matrix = getFull();
 
-    lack = lack && Number.isInteger(lack) ? (lack > 64 ? DEFAULT_LACK : Math.abs(lack)) : DEFAULT_LACK;
+    lack = lack && /^\d+$/.test(lack) ? (lack > 64 ? DEFAULT_LACK : Math.abs(lack)) : DEFAULT_LACK;
 
     while (lack--) {
-        let index = Math.ceil(Math.random() * 81) - 1;
-        let row = Math.floor(index / 9);
-        let column = index % 9;
+        var index = Math.ceil(Math.random() * 81) - 1;
+        var row = Math.floor(index / 9);
+        var column = index % 9;
         while (matrix[row][column] === 0) {
             index = Math.ceil(Math.random() * 81) - 1;
             row = Math.floor(index / 9);
@@ -113,17 +111,28 @@ function blink(lack) {
     return matrix;
 }
 
+function isRepeat(arr) {
+    for (var i = 0, len = arr.length; i < len; i++) {
+        if (arr.indexOf(arr[i]) !== arr.lastIndexOf(arr[i])) {
+            return true;
+        }
+    }
+    return false;
+}
+
 /**
  * Check sudoku result.
  * @param {Array[]} matrix
  * @returns Boolean | Object
  */
 function checkMatrix(matrix) {
+    var i, j, len;
+
     // Check row
-    for (let [i, r] of matrix.entries()) {
-        if (r.includes(0)) {
+    for (i = 0, len = matrix.length; i < len; i++) {
+        if (matrix[i].indexOf(0) !== -1) {
             return false;
-        } else if ((new Set(r)).size < 9) {
+        } else if (isRepeat(matrix[i])) {
             return {
                 row: i
             };
@@ -131,29 +140,27 @@ function checkMatrix(matrix) {
     }
 
     // Check column
-    let count = 9;
-    let s = new Set();
+    var s = [];
+    var count = 9;
     while (count--) {
-        s.clear();
-        for (let i = 0; i < 9; i++) {
+        for (var i = 0; i < 9; i++) {
             if (!/^[1-9]$/.test(matrix[i][count])) {
                 return false;
+            } else if (s.indexOf(matrix[i][count]) !== -1) {
+                return {
+                    column: count
+                };
             }
-            s.add(matrix[i][count])
-        }
-        if (s.size < 9) {
-            return {
-                column: count
-            };
+            s.push(matrix[i][count]);
         }
     }
 
     // Check block
-    for (let x = 0; x < 3; x++) {
-        for (let y = 0; y < 3; y++) {
-            let m = x * 3;
-            let n = y * 3;
-            let block = [
+    for (var x = 0; x < 3; x++) {
+        for (var y = 0; y < 3; y++) {
+            var m = x * 3;
+            var n = y * 3;
+            var block = [
                 matrix[m][n], matrix[m][n+1], matrix[m][n+2],
                 matrix[m+1][n], matrix[m+1][n+1], matrix[m+1][n+2],
                 matrix[m+2][n], matrix[m+2][n+1], matrix[m+2][n+2]
@@ -161,7 +168,7 @@ function checkMatrix(matrix) {
 
             if (block.includes(0)) {
                 return false;
-            } else if ((new Set(block)).size < 9) {
+            } else if (isRepeat(block)) {
                 return {
                     block: [x, y]
                 };
