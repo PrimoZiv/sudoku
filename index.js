@@ -1,7 +1,9 @@
+const DEFAULT_LACK = 16;
+
 // Get random 1-9
 function getRowNumbers() {
     let seq = [];
-    let temp = [1,2,3,4,5,6,7,8,9];
+    let temp = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
     while (temp.length > 1) {
         let random = Math.ceil(Math.random() * temp.length) - 1;
@@ -42,9 +44,9 @@ function checkLine(line, matrix, row) {
 function getLastLine(matrix) {
     let column = 0;
     let row = [];
-    
+
     while (column < 9) {
-        let temp = [1,2,3,4,5,6,7,8,9];
+        let temp = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         matrix.forEach((v, i) => {
             let index = temp.findIndex((t) => {
                 return t === v[column];
@@ -89,4 +91,27 @@ function getFull() {
     return matrix;
 }
 
-module.exports = getFull;
+function blink(lack) {
+    let matrix = getFull();
+
+    lack = lack && Number.isInteger(lack) ? (lack > 64 ? DEFAULT_LACK : Math.abs(lack)) : DEFAULT_LACK;
+
+    while (lack--) {
+        let index = Math.ceil(Math.random() * 81) - 1;
+        let row = Math.floor(index / 9);
+        let column = index % 9;
+        while (matrix[row][column] === 0) {
+            index = Math.ceil(Math.random() * 81) - 1;
+            row = Math.floor(index / 9);
+            column = index % 9;
+        }
+        matrix[row][column] = 0;
+    }
+
+    return matrix;
+}
+
+module.exports = {
+    matrix: getFull,
+    blink: blink
+};
