@@ -1,13 +1,15 @@
 // Get random 1-9
 function getRowNumbers() {
-    let temp = new Set();
-    while (temp.size < 9) {
-        let i = Math.floor(Math.random() * 10);
-        if (i !== 0) {
-            temp.add(i);
-        }
+    let seq = [];
+    let temp = [1,2,3,4,5,6,7,8,9];
+
+    while (temp.length > 1) {
+        let random = Math.ceil(Math.random() * temp.length) - 1;
+        seq.push(temp[random]);
+        temp.splice(random, 1);
     }
-    return temp;
+    seq.push(temp[0]);
+    return seq;
 }
 
 // Check new line valid
