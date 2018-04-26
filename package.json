@@ -1,6 +1,6 @@
 {
   "name": "sudoku-matrix",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Generate a sudoku matrix.",
   "main": "index.js",
   "scripts": {

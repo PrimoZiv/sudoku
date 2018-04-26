@@ -10,7 +10,7 @@ npm install sudoku-matrix
 ## Usage
 
 ```javascript
-const {matrix, blink} = require('sudoku-matrix');
+const {matrix, blink, checkMatrix} = require('sudoku-matrix');
 
 // Get complete matrix.
 matrix();

@@ -1,3 +1,5 @@
+'use strict'
+
 const DEFAULT_LACK = 16;
 
 // Get random 1-9
@@ -111,7 +113,67 @@ function blink(lack) {
     return matrix;
 }
 
+/**
+ * Check sudoku result.
+ * @param {Array[]} matrix
+ * @returns Boolean | Object
+ */
+function checkMatrix(matrix) {
+    // Check row
+    for (let [i, r] of matrix.entries()) {
+        if (r.includes(0)) {
+            return false;
+        } else if ((new Set(r)).size < 9) {
+            return {
+                row: i
+            };
+        }
+    }
+
+    // Check column
+    let count = 9;
+    let s = new Set();
+    while (count--) {
+        s.clear();
+        for (let i = 0; i < 9; i++) {
+            if (!/^[1-9]$/.test(matrix[i][count])) {
+                return false;
+            }
+            s.add(matrix[i][count])
+        }
+        if (s.size < 9) {
+            return {
+                column: count
+            };
+        }
+    }
+
+    // Check block
+    for (let x = 0; x < 3; x++) {
+        for (let y = 0; y < 3; y++) {
+            let m = x * 3;
+            let n = y * 3;
+            let block = [
+                matrix[m][n], matrix[m][n+1], matrix[m][n+2],
+                matrix[m+1][n], matrix[m+1][n+1], matrix[m+1][n+2],
+                matrix[m+2][n], matrix[m+2][n+1], matrix[m+2][n+2]
+            ];
+
+            if (block.includes(0)) {
+                return false;
+            } else if ((new Set(block)).size < 9) {
+                return {
+                    block: [x, y]
+                };
+            }
+        }
+    }
+
+    return true;
+}
+
 module.exports = {
     matrix: getFull,
-    blink: blink
+    blink: blink,
+    checkMatrix: checkMatrix
 };
