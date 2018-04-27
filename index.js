@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 var DEFAULT_LACK = 16;
 
@@ -140,10 +140,11 @@ function checkMatrix(matrix) {
     }
 
     // Check column
-    var s = [];
+    var s;
     var count = 9;
     while (count--) {
-        for (var i = 0; i < 9; i++) {
+        s = [];
+        for (i = 0; i < 9; i++) {
             if (!/^[1-9]$/.test(matrix[i][count])) {
                 return false;
             } else if (s.indexOf(matrix[i][count]) !== -1) {
@@ -166,7 +167,7 @@ function checkMatrix(matrix) {
                 matrix[m+2][n], matrix[m+2][n+1], matrix[m+2][n+2]
             ];
 
-            if (block.includes(0)) {
+            if (block.indexOf(0) !== -1) {
                 return false;
             } else if (isRepeat(block)) {
                 return {
